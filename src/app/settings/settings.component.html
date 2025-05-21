@@ -1,0 +1,25 @@
+<div class="modal">
+    <h2>Timer Settings</h2>
+    <form [formGroup]="settingsForm">
+
+        <label>
+            Pomodoro Duration (minutes)
+            <input type="number" placeholder="60" min="1" formControlName="pomodoroLength" />
+        </label>
+        <label>
+            Short Break Duration (minutes)
+            <input type="number" placeholder="5" min="1" formControlName="shortBreakLength" />
+        </label>
+        <label>
+            Long Break Duration (minutes)
+            <input type="number" placeholder="15" min="1" formControlName="longBreakLength" />
+        </label>
+        <label>
+            Loops Before Long Break
+            <input type="number" placeholder="3" min="1" formControlName="loopsBeforeLongBreak" />
+        </label>
+
+    </form>
+    <button class="close-btn" (click)="save()" [disabled]="!this.settingsForm.valid">Save</button>
+    <button class="close-btn" (click)="this.dialogRef.close()">Cancel</button>
+</div>

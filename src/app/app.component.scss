@@ -1,0 +1,73 @@
+.settings-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 999px;
+    font-size: 1rem;
+    background-color: #ffd93d;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.settings-btn:hover {
+    background-color: #ffca2c;
+}
+
+.modes {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.mode {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 999px;
+    font-size: 1rem;
+    background-color: #ff6b6b;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.mode:nth-child(2) {
+    background-color: #6bcb77;
+}
+
+.mode:nth-child(3) {
+    background-color: #4d96ff;
+}
+
+.mode:hover {
+    opacity: 0.9;
+}
+
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.control-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 999px;
+    font-size: 1rem;
+    background-color: #ffd6a5;
+    color: black;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.control-btn.stop {
+    background-color: #ffd6a5;
+}
+
+.control-btn:hover {
+    opacity: 0.9;
+}

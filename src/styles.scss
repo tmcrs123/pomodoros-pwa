@@ -1,0 +1,23 @@
+ * {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+     font-family: 'Baloo 2', cursive;
+ }
+
+ body {
+     height: 100vh;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     background: linear-gradient(135deg, #ffdee9, #b5fffc);
+     color: #333;
+ }
+
+ h1 {
+     font-size: 3rem;
+     margin-bottom: 30px;
+     color: #ff6b6b;
+     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+ }

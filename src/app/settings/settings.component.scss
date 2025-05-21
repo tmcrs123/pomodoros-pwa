@@ -1,0 +1,51 @@
+  .modal {
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+  }
+
+  .modal h2 {
+      color: #ff6b6b;
+      text-align: center;
+      font-size: 1.5rem;
+  }
+
+  .modal label {
+      display: flex;
+      flex-direction: column;
+      font-size: 1rem;
+      color: #444;
+  }
+
+  .modal input {
+      margin-top: 5px;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 1rem;
+      outline: none;
+  }
+
+  .modal input:focus {
+      border-color: #ff6b6b;
+  }
+
+  .modal .close-btn {
+      background-color: #6bcb77;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.3s;
+  }
+
+  .modal .close-btn:hover {
+      background-color: #5bb866;
+  }

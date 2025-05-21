@@ -1,0 +1,13 @@
+<!-- running -->
+@if((this.statusChanges | async) === 'RUNNING'){
+{{timer() | secondsToHours}}
+}
+<!-- not started -->
+@else if((this.statusChanges | async) === 'IDLE') {
+{{timer() | secondsToHours}}
+}
+
+<!-- paused -->
+@else if((this.statusChanges | async) === 'STOPPED') {
+{{timer() | secondsToHours}}
+}
