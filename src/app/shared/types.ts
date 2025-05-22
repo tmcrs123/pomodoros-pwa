@@ -1,10 +1,11 @@
 export type ClockStatus = 'RUNNING' | 'STOPPED';
+export type StepDescription = 'FOCUS' | 'BREAK' | 'LONG-BREAK'
 
 export type Step = {
     backgroundColor: string
     duration: number,
     icon: string,
-    stepDescription: string,
+    stepDescription: StepDescription,
 }
 
 export type AppState = {

@@ -32,6 +32,7 @@
     color: white;
     cursor: pointer;
     transition: background 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .mode:nth-child(2) {
@@ -49,29 +50,30 @@
 
 .controls {
     display: flex;
+    justify-self: center;
+    align-items: center;
     gap: 15px;
     margin-bottom: 30px;
 }
 
 .control-btn {
-    padding: 10px 20px;
     border: none;
-    border-radius: 999px;
     font-size: 1rem;
+    color: white;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 999px;
     background-color: #ffd6a5;
     color: black;
     cursor: pointer;
     transition: background 0.3s ease;
-}
-
-.control-btn.stop {
-    background-color: #ffd6a5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .control-btn:hover {
-    opacity: 0.9;
+    background-color: #ffbd78;
 }
 
-.clock-icon {
-    font-size: smaller;
+.clock-decoration {
+    font-size: 1.5rem;
 }

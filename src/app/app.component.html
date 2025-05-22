@@ -1,19 +1,25 @@
 <button class="settings-btn" (click)="openDialog()">⚙️ Settings</button>
 <div class="modes">
-    <button class="mode" (click)="handleManualModeChange(0)">💪 {{config.orderedSteps()[0].stepDescription }}</button>
-    <button class="mode" (click)="handleManualModeChange(1)">☕ {{config.orderedSteps()[1].stepDescription }}</button>
-    <button class="mode" (click)="handleManualModeChange(2)">💤 {{config.orderedSteps()[2].stepDescription }}</button>
+    <button class="mode" (click)="triggerManualModeChange(0)">{{config.orderedSteps()[0].icon}}
+        {{config.orderedSteps()[0].stepDescription | titlecase }}</button>
+    <button class="mode" (click)="triggerManualModeChange(1)">{{config.orderedSteps()[1].icon}}
+        {{config.orderedSteps()[1].stepDescription | titlecase }}</button>
+    <button class="mode" (click)="triggerManualModeChange(2)">{{config.orderedSteps()[2].icon}}
+        {{config.orderedSteps()[2].stepDescription | titlecase }}</button>
 </div>
 
 <app-clock [bgColor]="bgColor()">
-    <div>
-        {{config.orderedSteps()[this.currentStepIndex].stepDescription }}
+    <div class="clock-decoration">
+        {{config.orderedSteps()[this.stepIndex].stepDescription | titlecase }}
+        {{config.orderedSteps()[this.stepIndex].icon }}
     </div>
 </app-clock>
 
 <div class="controls">
-    <button (click)="startClock()" [disabled]="(clock().statusChanges | async) === 'RUNNING'"
-        class="control-btn start">▶️ Start</button>
-    <button (click)="stopClock()" [disabled]="(clock().statusChanges | async) !== 'RUNNING'" class="control-btn stop">⏹️
+    @if((clock().statusChanges | async) === 'STOPPED'; as status){
+    <button (click)="startClock()" class="control-btn start">▶️ Start</button>
+    } @else {
+    <button (click)="stopClock()" class="control-btn stop">⏹️
         Stop</button>
+    }
 </div>

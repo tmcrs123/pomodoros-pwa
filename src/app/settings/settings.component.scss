@@ -2,8 +2,7 @@
       background-color: white;
       padding: 30px;
       border-radius: 20px;
-      max-width: 400px;
-      width: 90%;
+      min-width: 400px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
       display: flex;
       flex-direction: column;
@@ -48,4 +47,24 @@
 
   .modal .close-btn:hover {
       background-color: #5bb866;
+  }
+
+  .modal .close-btn:disabled {
+      background-color: #999;
+      cursor: not-allowed
+  }
+
+  .cancel-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 999px;
+      background-color: #999;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .cancel-btn:hover {
+      background-color: #777;
   }

@@ -31,6 +31,7 @@ export class ClockComponent {
         this.timer.set(next)
         if (next == 0) {
           this.running$.next(false)
+          this.audio.play();
         }
       }),
     )
@@ -38,10 +39,6 @@ export class ClockComponent {
   private clockStopped = EMPTY.pipe(
     finalize(() => {
       this.statusChanges$.next('STOPPED')
-      if (this.timer() == 0) {
-        this.audio.play();
-      }
-
     }));
 
   private tick$ = this.running$.pipe(
