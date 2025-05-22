@@ -1,16 +1,15 @@
-export type ClockStatus = 'RUNNING' | 'STOPPED' | 'IDLE';
-
-export type StepDescription = 'focus' | 'break' | 'long-break'
+export type ClockStatus = 'RUNNING' | 'STOPPED';
 
 export type Step = {
-    stepDescription: StepDescription,
-    duration: number,
     backgroundColor: string
+    duration: number,
+    icon: string,
+    stepDescription: string,
 }
 
 export type AppState = {
-    pomodoroLength: number
-    shortBreakLength: number
     longBreakLength: number
     loopsBeforeLongBreak: number
+    pomodoroLength: number
+    shortBreakLength: number
 }

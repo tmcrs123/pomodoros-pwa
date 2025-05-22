@@ -1,11 +1,15 @@
 <button class="settings-btn" (click)="openDialog()">⚙️ Settings</button>
 <div class="modes">
-    <button class="mode" (click)="handleManualModeChange(0)">💪 Work</button>
-    <button class="mode" (click)="handleManualModeChange(1)">☕ Break</button>
-    <button class="mode" (click)="handleManualModeChange(2)">💤 Long Break</button>
+    <button class="mode" (click)="handleManualModeChange(0)">💪 {{config.orderedSteps()[0].stepDescription }}</button>
+    <button class="mode" (click)="handleManualModeChange(1)">☕ {{config.orderedSteps()[1].stepDescription }}</button>
+    <button class="mode" (click)="handleManualModeChange(2)">💤 {{config.orderedSteps()[2].stepDescription }}</button>
 </div>
 
-<app-clock [bgColor]="orderedSteps[currentStepIndex].backgroundColor"></app-clock>
+<app-clock [bgColor]="bgColor()">
+    <div>
+        {{config.orderedSteps()[this.currentStepIndex].stepDescription }}
+    </div>
+</app-clock>
 
 <div class="controls">
     <button (click)="startClock()" [disabled]="(clock().statusChanges | async) === 'RUNNING'"

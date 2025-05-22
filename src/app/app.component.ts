@@ -1,10 +1,10 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, viewChild, ViewContainerRef } from '@angular/core';
-import { bufferCount, tap } from 'rxjs';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { ClockComponent } from "./clock/clock.component";
 import { SettingsComponent } from './settings/settings.component';
 import { ClockStatus, Step } from './shared/types';
+import { ConfigService } from './config.service';
 
 @Component({
   selector: 'app-root',
@@ -15,108 +15,79 @@ import { ClockStatus, Step } from './shared/types';
 
 })
 export class AppComponent {
-  title = 'pomodoros';
-
-  dialog = inject(Dialog);
-
-  openDialog() {
-    this.dialog.open(SettingsComponent, {
-      minWidth: '300px',
-    });
-
-  }
-
+  protected config = inject(ConfigService);
   protected clock = viewChild(ClockComponent);
+  protected bgColor = signal(this.config.orderedSteps()[0].backgroundColor);
 
-  public orderedSteps: { [index: number]: Step } = {
-    0: { stepDescription: 'focus', duration: 1, backgroundColor: "#ff6b6b" },
-    1: { stepDescription: 'break', duration: 1, backgroundColor: "#6bcb77" },
-    2: { stepDescription: 'long-break', duration: 1, backgroundColor: "#4d96ff" }
-  }
-
-  private longBreakInterval = 2;
+  private dialog = inject(Dialog);
+  protected currentStepIndex = 0
+  private nextStepIndex: number = undefined;
   private longBreakCount = 0;
 
-  public currentStepIndex = 0
-  private nextStepIndex: number = undefined;
-
-  private vcr = inject(ViewContainerRef);
-
-  ngAfterViewInit() {
-    this.clock().statusChanges
-      .pipe(
-        bufferCount(2, 1)
-      )
-      .subscribe((c: ClockStatus[]) => {
-        console.log('ClockStatus t lsast: ', c);
-
-        const changeToIdleStatus = c[0] !== 'IDLE' && c[1] === 'IDLE';
-
-        if (!changeToIdleStatus) return;
-
-        if (!this.nextStepIndex) {
-          this.determineNextStep()
-        }
-
-        this.changeStep()
-      })
-  }
-
-  startClock() {
+  public startClock() {
     this.clock().start();
   }
 
-  stopClock() {
+  public stopClock() {
     this.clock().stop();
+  }
+
+  protected ngAfterViewInit() {
+    this.clock().statusChanges
+      .subscribe((c: ClockStatus) => {
+        const mustChangeStep = c === 'STOPPED' && this.clock().timer() === 0;
+
+        if (!mustChangeStep) return;
+
+        this.determineNextStep()
+        this.updateUiToNextStep();
+        this.clock().reset(this.config.orderedSteps()[this.nextStepIndex].duration);
+      })
   }
 
   protected handleManualModeChange(nextIndex: number) {
     this.longBreakCount = 0;
     this.nextStepIndex = nextIndex;
-    this.changeStep();
+    this.updateUiToNextStep();
+    this.clock().reset(this.config.orderedSteps()[nextIndex].duration);
   }
 
-  protected changeStep() {
-    let currentStep = this.orderedSteps[this.currentStepIndex];
-    let nextStep = this.orderedSteps[this.nextStepIndex];
-
-    let el: HTMLElement = this.vcr.element.nativeElement
-    el.classList.replace(currentStep.stepDescription, nextStep.stepDescription);
-
-    this.clock().reset(this.orderedSteps[this.nextStepIndex].duration);
-
-    this.currentStepIndex = this.nextStepIndex;
-    this.nextStepIndex = undefined;
-    console.log(this.currentStepIndex);
+  protected openDialog() {
+    this.dialog.open(SettingsComponent, {
+      minWidth: '300px',
+    });
   }
 
-  protected determineNextStep() {
-    /***
-       * first interval - longBreakCount = 1 - short - 1
-       * second interval - longBreakCount = 2 - short - 0
-       * thirt interval - longBreakCount = 3 - LONG - 2
-      */
-    const currentStep = this.orderedSteps[this.currentStepIndex]
+  private updateUiToNextStep() {
+    let nextStep = this.config.orderedSteps()[this.nextStepIndex];
+    this.bgColor.set(nextStep.backgroundColor)
+  }
 
-    if (currentStep.stepDescription === 'long-break') {
-      this.longBreakCount = 0
-      this.nextStepIndex = 0
+  private determineNextStep(): void {
+    const currentStep = this.config.orderedSteps()[this.currentStepIndex];
+    const isLongBreak = currentStep.stepDescription === 'long-break';
+    const isFocus = currentStep.stepDescription === 'focus';
+
+    if (isLongBreak) {
+      this.longBreakCount = 0;
+      this.nextStepIndex = 0;
       return;
     }
 
-    if (currentStep.stepDescription === 'focus') {
-      if (this.longBreakInterval >= this.longBreakCount) {
-        this.longBreakCount += 1;
-        this.nextStepIndex = 1
+    if (isFocus) {
+      const needsShortBreak = this.longBreakCount < this.config.state().loopsBeforeLongBreak;
+
+      if (needsShortBreak) {
+        this.longBreakCount++;
+        this.nextStepIndex = 1; // Short break
+      } else {
+        this.nextStepIndex = 2; // Long break
       }
 
-      else {
-        this.nextStepIndex = 2;
-      }
-
-      return
+      return;
     }
 
+    // Default to focus
     this.nextStepIndex = 0;
   }
 }

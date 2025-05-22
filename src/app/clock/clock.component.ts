@@ -1,5 +1,4 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, HostBinding, inject, Input, input, signal } from '@angular/core';
+import { Component, HostBinding, inject, Input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject, EMPTY, finalize, interval, map, of, skip, Subscription, switchMap, takeWhile, tap } from 'rxjs';
 import { ConfigService } from '../config.service';
@@ -8,25 +7,21 @@ import { ClockStatus } from '../shared/types';
 
 @Component({
   selector: 'app-clock',
-  imports: [FormsModule, AsyncPipe, SecondsToHoursPipe],
+  imports: [FormsModule, SecondsToHoursPipe],
   templateUrl: './clock.component.html',
   styleUrl: './clock.component.scss'
 })
 export class ClockComponent {
   @HostBinding('style.backgroundColor') @Input() bgColor: string = '';
-
-
-  protected config = inject(ConfigService);
-  protected timer = signal(this.config.state().pomodoroLength * 60);
   private audio = new Audio();
-
-  protected running$ = new BehaviorSubject({ isRunning: false, hasBeenReset: false });
-  protected statusChanges$ = new BehaviorSubject<ClockStatus>('IDLE')
-  public statusChanges = this.statusChanges$.asObservable();
-
   private tickSubscription: Subscription;
+  protected config = inject(ConfigService);
+  protected running$ = new BehaviorSubject(false);
+  protected statusChanges$ = new BehaviorSubject<ClockStatus>('STOPPED')
+  public statusChanges = this.statusChanges$.asObservable();
+  public timer = signal(this.config.state().pomodoroLength * 60);
 
-  private clockRunning$ = of(null)
+  private clockRunning = of(null)
     .pipe(
       tap(() => this.statusChanges$.next("RUNNING")),
       switchMap(() => interval(1000)),
@@ -34,40 +29,24 @@ export class ClockComponent {
       takeWhile(next => next >= 0),
       tap((next) => {
         this.timer.set(next)
+        if (next == 0) {
+          this.running$.next(false)
+        }
       }),
-      finalize(() => {
-        console.log('In finalize block');
-        this.running$.next({ isRunning: false, hasBeenReset: false })
-      })
     )
 
-  private clockStopped = (hasBeenReset: boolean) => EMPTY.pipe(
+  private clockStopped = EMPTY.pipe(
     finalize(() => {
-      if (this.timer() > 0 && !hasBeenReset) this.statusChanges$.next('STOPPED')
-      else {
-        this.statusChanges$.next("IDLE")
-        if (this.timer() == 0) {
-          this.audio.play();
-        }
+      this.statusChanges$.next('STOPPED')
+      if (this.timer() == 0) {
+        this.audio.play();
       }
+
     }));
 
   private tick$ = this.running$.pipe(
     skip(1),
-    switchMap(running => running.isRunning ? this.clockRunning$ : this.clockStopped(running.hasBeenReset)))
-
-  public start() {
-    this.running$.next({ isRunning: true, hasBeenReset: false });
-  }
-
-  public stop() {
-    this.running$.next({ isRunning: false, hasBeenReset: false });
-  }
-
-  public reset(minutes: number) {
-    this.timer.set(minutes * 60)
-    this.running$.next({ isRunning: false, hasBeenReset: true });
-  }
+    switchMap(running => running ? this.clockRunning : this.clockStopped))
 
   ngOnInit() {
     this.audio.src = 'assets/alarm.mp3';
@@ -77,5 +56,18 @@ export class ClockComponent {
 
   ngOnDestroy() {
     this.tickSubscription.unsubscribe();
+  }
+
+  public start() {
+    this.running$.next(true);
+  }
+
+  public stop() {
+    this.running$.next(false);
+  }
+
+  public reset(minutes: number) {
+    this.timer.set(minutes * 60)
+    if (this.running$.value) this.stop();
   }
 }
